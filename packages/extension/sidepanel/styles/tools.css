@@ -558,9 +558,11 @@
   border-radius: 999px;
   background: var(--card);
   border: none;
-  overflow: visible;
+  overflow: hidden;
   transition:
+    width 350ms cubic-bezier(0.175, 0.885, 0.32, 1.275),
     max-width 350ms cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    border-radius 350ms ease,
     opacity 220ms ease,
     box-shadow 220ms ease;
   cursor: pointer;
@@ -594,7 +596,6 @@
   width: auto;
   min-width: 34px;
   max-width: 420px;
-  overflow: hidden;
   opacity: 1;
   border-radius: 17px;
   cursor: default;

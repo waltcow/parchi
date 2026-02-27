@@ -223,12 +223,12 @@ const autoResizeTextArea = (textarea: HTMLTextAreaElement | null, maxHeight: num
     }
   });
 
-  // Enter to send (Shift+Enter for newline), workflow menu gets priority
+  // Cmd+Enter to send (Enter for newline)
   this.elements.userInput?.addEventListener('keydown', (event: KeyboardEvent) => {
     if (this.workflowMenuOpen && this.handleWorkflowKeydown(event)) {
       return;
     }
-    if (event.key === 'Enter' && !event.shiftKey) {
+    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();
       this.sendMessage();
     }
