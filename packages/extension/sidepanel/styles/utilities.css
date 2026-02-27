@@ -35,12 +35,14 @@
 
 .error-banner {
   border-color: var(--error);
-  background: hsl(0, 30%, 12%);
+  background: color-mix(in oklab, var(--error) 12%, var(--card));
+  color: var(--foreground);
 }
 
 .run-incomplete-banner {
   border-color: var(--warning, hsl(40, 55%, 60%));
-  background: hsl(40, 10%, 12%);
+  background: color-mix(in oklab, var(--warning) 12%, var(--card));
+  color: var(--foreground);
 }
 
 .error-banner .error-icon {
@@ -63,7 +65,7 @@
   padding: 3px 10px;
   font-size: 11px;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--muted);
   cursor: pointer;
@@ -71,8 +73,8 @@
 }
 
 .error-banner .error-dismiss:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: var(--ink-2);
+  border-color: var(--muted-dim);
   color: var(--foreground);
   transform: translateY(-1px);
 }
@@ -200,7 +202,7 @@ textarea:disabled {
 }
 
 ::selection {
-  background: hsl(230, 25%, 28%);
+  background: rgb(var(--accent-rgb) / 0.28);
   color: var(--foreground);
 }
 
@@ -235,8 +237,8 @@ textarea:disabled {
   opacity: 0;
   z-index: 200;
   box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.03);
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    0 0 0 1px var(--ink-1);
   letter-spacing: 0.01em;
   transition: opacity 0.15s ease, transform 0.15s ease;
   transition-delay: 0s;
