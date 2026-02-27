@@ -178,53 +178,6 @@
   border-radius: 999px;
 }
 
-/* Relay status */
-.relay-status-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  border: 1px solid var(--ink-1);
-  background: var(--card);
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.status-pill::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 9999px;
-  background: var(--muted-dim);
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
-}
-
-.status-pill.connected {
-  color: var(--foreground);
-  border-color: rgb(var(--accent-rgb) / 0.45);
-  background: transparent;
-}
-
-.status-pill.connected::before {
-  background: var(--success);
-  box-shadow: 0 0 10px hsla(120, 15%, 55%, 0.35);
-}
-
-.relay-last-error {
-  font-size: 11px;
-  color: var(--muted-dim);
-  font-family: var(--font-mono);
-  overflow-wrap: anywhere;
-}
-
 /* Settings Sections */
 .settings-section {
   background: var(--background);

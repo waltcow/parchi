@@ -181,7 +181,7 @@ const FONT_STYLE_WEIGHTS: Record<string, string> = {
 };
 
 (SidePanelUI.prototype as any).switchSettingsTab = function switchSettingsTab(
-  tabName: 'setup' | 'model' | 'browser' | 'network' | 'prompt' | 'profiles' | 'usage' = 'setup',
+  tabName: 'setup' | 'model' | 'browser' | 'network' | 'prompt' | 'profiles' = 'setup',
 ) {
   // Persist current form state when leaving setup tab
   if (this.currentSettingsTab === 'setup' && tabName !== 'setup') {
@@ -190,7 +190,7 @@ const FONT_STYLE_WEIGHTS: Record<string, string> = {
   }
   this.currentSettingsTab = tabName;
 
-  const tabs = ['setup', 'model', 'browser', 'network', 'prompt', 'profiles', 'usage'] as const;
+  const tabs = ['setup', 'model', 'browser', 'network', 'prompt', 'profiles'] as const;
   const tabElements: Record<string, HTMLElement | null> = {
     setup: this.elements.settingsTabSetup,
     model: this.elements.settingsTabModel,
@@ -198,7 +198,6 @@ const FONT_STYLE_WEIGHTS: Record<string, string> = {
     network: this.elements.settingsTabNetwork,
     prompt: this.elements.settingsTabPrompt,
     profiles: this.elements.settingsTabProfiles,
-    usage: this.elements.settingsTabUsage || document.getElementById('settingsTabUsage'),
   };
   const btnElements: Record<string, HTMLElement | null> = {
     setup: this.elements.settingsTabSetupBtn,
@@ -207,7 +206,6 @@ const FONT_STYLE_WEIGHTS: Record<string, string> = {
     network: this.elements.settingsTabNetworkBtn,
     prompt: this.elements.settingsTabPromptBtn,
     profiles: this.elements.settingsTabProfilesBtn,
-    usage: this.elements.settingsTabUsageBtn || document.getElementById('settingsTabUsageBtn'),
   };
 
   for (const tab of tabs) {
@@ -217,11 +215,6 @@ const FONT_STYLE_WEIGHTS: Record<string, string> = {
     // Activate the pane inside the tab container
     const pane = tabElements[tab]?.querySelector('.settings-tab-pane') as HTMLElement | null;
     pane?.classList.toggle('active', isActive);
-  }
-
-  // Auto-fetch usage data when switching to usage tab
-  if (tabName === 'usage') {
-    this.refreshUsageTab?.();
   }
 };
 
@@ -246,7 +239,7 @@ const FONT_STYLE_WEIGHTS: Record<string, string> = {
     settings = await chrome.storage.local.get(PARCHI_STORAGE_KEYS as unknown as string[]);
   } catch (error) {
     console.error('[Parchi] Failed to load settings from storage:', error);
-    this.updateStatus('Failed to load settings', 'error');
+    this.updateStatus('无法加载设置', 'error');
   }
 
   const storedConfigs = settings.configs || {};
@@ -304,12 +297,6 @@ const FONT_STYLE_WEIGHTS: Record<string, string> = {
     this.elements.saveHistory.value = settings.saveHistory !== undefined ? String(settings.saveHistory) : 'true';
   this.timelineCollapsed = settings.timelineCollapsed !== undefined ? settings.timelineCollapsed !== false : true;
 
-  if (this.elements.relayEnabled)
-    this.elements.relayEnabled.value = settings.relayEnabled !== undefined ? String(settings.relayEnabled) : 'false';
-  if (this.elements.relayUrl) this.elements.relayUrl.value = settings.relayUrl || 'http://127.0.0.1:17373';
-  if (this.elements.relayToken) this.elements.relayToken.value = settings.relayToken || '';
-  this.updateRelayStatusFromSettings?.(settings);
-
   const defaultPermissions = {
     read: true,
     interact: true,
@@ -336,20 +323,6 @@ const FONT_STYLE_WEIGHTS: Record<string, string> = {
   this.updateScreenshotToggleState();
   this.editProfile(this.currentConfig, true);
   this.updatePromptSections?.();
-};
-
-(SidePanelUI.prototype as any).updateRelayStatusFromSettings = function updateRelayStatusFromSettings(
-  settings: Record<string, any> = {},
-) {
-  const connected = settings.relayConnected === true;
-  if (this.elements.relayConnectedBadge) {
-    this.elements.relayConnectedBadge.textContent = connected ? 'Connected' : 'Disconnected';
-    this.elements.relayConnectedBadge.classList.toggle('connected', connected);
-  }
-  if (this.elements.relayLastErrorText) {
-    const raw = settings.relayLastError;
-    this.elements.relayLastErrorText.textContent = raw ? String(raw) : '';
-  }
 };
 
 (SidePanelUI.prototype as any).saveSettings = async function saveSettings() {
@@ -489,8 +462,6 @@ const FONT_STYLE_WEIGHTS: Record<string, string> = {
 (SidePanelUI.prototype as any).persistAllSettings = async function persistAllSettings({ silent = false } = {}) {
   try {
     const activeProfile = this.configs[this.currentConfig] || {};
-    const rawRelayUrl = (this.elements.relayUrl?.value || '').trim();
-    const normalizedRelayUrl = rawRelayUrl && !rawRelayUrl.includes('://') ? `http://${rawRelayUrl}` : rawRelayUrl;
     const payload = {
       provider: activeProfile.provider ?? '',
       apiKey: activeProfile.apiKey ?? '',
@@ -521,9 +492,6 @@ const FONT_STYLE_WEIGHTS: Record<string, string> = {
       fontPreset: this.fontPreset || 'default',
       fontStylePreset: this.fontStylePreset || 'normal',
       theme: this.currentTheme || DEFAULT_THEME_ID,
-      relayEnabled: this.elements.relayEnabled?.value === 'true',
-      relayUrl: normalizedRelayUrl,
-      relayToken: this.elements.relayToken?.value || '',
       activeConfig: this.currentConfig,
       configs: this.configs,
     };
@@ -535,7 +503,7 @@ const FONT_STYLE_WEIGHTS: Record<string, string> = {
   } catch (error) {
     console.error('[Parchi] persistAllSettings error:', error);
     if (!silent) {
-      this.updateStatus('Failed to save settings', 'error');
+      this.updateStatus('无法保存设置', 'error');
     }
     throw error;
   }

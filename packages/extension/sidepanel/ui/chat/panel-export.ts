@@ -383,5 +383,5 @@ import { SidePanelUI } from '../core/panel-ui.js';
     URL.revokeObjectURL(url);
   }, 100);
 
-  this.updateStatus(`Exported to ${filename}`, 'success');
+  this.updateStatus(`已导出到 ${filename}`, 'success');
 };

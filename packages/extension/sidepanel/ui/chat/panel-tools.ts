@@ -549,23 +549,6 @@ const MAX_TOOL_CALL_VIEWS = 200;
     this.elements.statusMeta.textContent = toolbarLabels.join(' · ');
   }
 
-  // --- Bubble: status only (actions, streaming) ---
-  const bubbleLabels: string[] = [];
-
-  if (this.pendingToolCount > 0) {
-    bubbleLabels.push(`${this.pendingToolCount} action${this.pendingToolCount > 1 ? 's' : ''} running`);
-  }
-  if (this.isStreaming) {
-    bubbleLabels.push('Streaming');
-  }
-
-  const bubbleMeta = document.getElementById('bubbleMeta');
-  if (bubbleMeta) {
-    bubbleMeta.textContent = bubbleLabels.join(' · ');
-  }
-
-  // Update mascot eye state
-  this.updateMascotEyeState();
   this.updateActivityToggle();
 };
 
@@ -577,91 +560,7 @@ const MAX_TOOL_CALL_VIEWS = 200;
   // Activity panel removed — no-op
 };
 
-/* ============================================================================
-   Mascot Bubble — click to show/hide status bubble above mascot
-   ============================================================================ */
 
-(SidePanelUI.prototype as any).initMascotBubble = function initMascotBubble() {
-  const mascot = document.getElementById('mascotCorner');
-  if (!mascot) return;
-
-  // Track typing for eye state
-  this._lastTypingAt = 0;
-  this._typingCheckTimerId = null;
-  this._mascotBubbleOpen = false;
-
-  mascot.addEventListener('click', () => {
-    this.toggleMascotBubble();
-  });
-
-  // Typing detection on userInput
-  const userInput = this.elements.userInput;
-  if (userInput) {
-    userInput.addEventListener('input', () => {
-      this._lastTypingAt = Date.now();
-      this.updateMascotEyeState();
-
-      // Start polling to detect when typing stops
-      if (!this._typingCheckTimerId) {
-        this._typingCheckTimerId = window.setInterval(() => {
-          const elapsed = Date.now() - this._lastTypingAt;
-          if (elapsed >= 5000) {
-            window.clearInterval(this._typingCheckTimerId);
-            this._typingCheckTimerId = null;
-            this.updateMascotEyeState();
-          }
-        }, 1000);
-      }
-    });
-  }
-};
-
-(SidePanelUI.prototype as any).toggleMascotBubble = function toggleMascotBubble() {
-  const bubble = document.getElementById('mascotBubble');
-  if (!bubble) return;
-
-  this._mascotBubbleOpen = !this._mascotBubbleOpen;
-  if (this._mascotBubbleOpen) {
-    bubble.classList.remove('hidden');
-    // Update content immediately
-    this.updateActivityState();
-  } else {
-    bubble.classList.add('hidden');
-  }
-};
-
-(SidePanelUI.prototype as any).updateMascotBubbleContent = function updateMascotBubbleContent(
-  verb: string,
-  elapsed: string,
-) {
-  const bubbleVerb = document.getElementById('bubbleVerb');
-  if (bubbleVerb) {
-    bubbleVerb.textContent = `${verb} ${elapsed}`;
-  }
-};
-
-/* ============================================================================
-   Mascot Eye State
-   ============================================================================ */
-
-(SidePanelUI.prototype as any).updateMascotEyeState = function updateMascotEyeState() {
-  const mascot = document.getElementById('mascotCorner');
-  if (!mascot) return;
-
-  const isRunning = !!(this.runStartedAt || this.isStreaming || this.pendingToolCount > 0);
-  const isTyping = this._lastTypingAt && (Date.now() - this._lastTypingAt) < 5000;
-
-  // Remove all state classes
-  mascot.classList.remove('sleeping', 'working', 'looking-up', 'thinking');
-
-  if (isRunning) {
-    mascot.classList.add('working');
-  } else if (isTyping) {
-    mascot.classList.add('looking-up');
-  } else {
-    mascot.classList.add('sleeping');
-  }
-};
 
 (SidePanelUI.prototype as any).updateThinkingPanel = function updateThinkingPanel(
   thinking: string | null,

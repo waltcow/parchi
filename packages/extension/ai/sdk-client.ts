@@ -23,7 +23,7 @@ export type SDKModelSettings = {
  */
 export function normalizeOpenRouterModelId(modelId: string): string {
   let model = modelId.trim();
-  if (/^(parchi|openrouter)\//i.test(model)) {
+  if (/^openrouter\//i.test(model)) {
     const parts = model.split('/');
     if (parts.length >= 2) {
       model = parts.slice(1).join('/');
@@ -58,7 +58,7 @@ export function resolveLanguageModel(settings: SDKModelSettings) {
       settings.proxyProvider ||
       (provider === 'anthropic' || provider === 'kimi'
         ? 'anthropic'
-        : provider === 'openrouter' || provider === 'parchi'
+        : provider === 'openrouter'
           ? 'openrouter'
           : 'openai');
 
@@ -137,9 +137,9 @@ export function resolveLanguageModel(settings: SDKModelSettings) {
     return kimiProvider(modelId);
   }
 
-  if (provider === 'openrouter' || provider === 'parchi') {
+  if (provider === 'openrouter') {
     const openRouterProvider = createOpenAICompatible({
-      name: provider === 'parchi' ? 'parchi-managed' : 'openrouter',
+      name: 'openrouter',
       apiKey,
       baseURL: 'https://openrouter.ai/api/v1',
       headers: {

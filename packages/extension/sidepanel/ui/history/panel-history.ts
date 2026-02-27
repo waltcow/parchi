@@ -155,7 +155,7 @@ const resolveHistoryContainer = (self: any): HTMLElement | null => {
     });
   } catch (e) {
     console.error('Failed to load history:', e);
-    container.innerHTML = '<div class="history-empty">Failed to load history.</div>';
+    container.innerHTML = '<div class="history-empty">无法加载历史记录。</div>';
   }
 };
 
@@ -336,7 +336,7 @@ const resolveHistoryContainer = (self: any): HTMLElement | null => {
     return;
   }
   this._clearHistoryPendingAt = now;
-  this.updateStatus('Click Clear again to confirm', 'warning');
+  this.updateStatus('请再次点击清除以确认', 'warning');
 };
 
 (SidePanelUI.prototype as any).formatTimeAgo = function formatTimeAgo(date: Date): string {

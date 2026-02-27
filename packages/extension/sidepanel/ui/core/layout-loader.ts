@@ -19,14 +19,13 @@ export const loadPanelLayout = async () => {
   const appRoot = document.getElementById('appRoot');
   if (!appRoot) return;
 
-  const [sidebarShell, mainContent, settingsPanel, settingsGeneral, settingsProfiles, settingsUsage, tabSelector] =
+  const [sidebarShell, mainContent, settingsPanel, settingsGeneral, settingsProfiles, tabSelector] =
     await Promise.all([
       loadTemplate('sidebar-shell.html'),
       loadTemplate('main.html'),
       loadTemplate('panels/settings.html'),
       loadTemplate('panels/settings-general.html'),
       loadTemplate('panels/settings-profiles.html'),
-      loadTemplate('panels/settings-usage.html'),
       loadTemplate('tab-selector.html'),
     ]);
 
@@ -56,20 +55,6 @@ export const loadPanelLayout = async () => {
   }
 
   injectInnerHtml(appContainer, '#settingsTabProfiles', settingsProfiles);
-
-  // Usage tab — uses same pane-distribution approach as settings-general
-  const usageTmp = document.createElement('div');
-  usageTmp.innerHTML = settingsUsage.trim();
-  const usagePanes = usageTmp.querySelectorAll('.settings-tab-pane[data-pane]');
-  for (const pane of Array.from(usagePanes)) {
-    const paneName = (pane as HTMLElement).dataset.pane;
-    if (!paneName) continue;
-    const containerId = `#settingsTab${paneName.charAt(0).toUpperCase() + paneName.slice(1)}`;
-    const container = appContainer.querySelector(containerId) as HTMLElement | null;
-    if (container) {
-      container.innerHTML = pane.outerHTML;
-    }
-  }
 
   const modalRoot = document.getElementById('modalRoot');
   if (modalRoot) {

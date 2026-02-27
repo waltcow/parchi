@@ -2,7 +2,7 @@
  * Background Service Performance Monitor
  *
  * Tracks memory growth in the service worker context:
- * session state maps, active runs, relay connections.
+ * session state maps, active runs.
  *
  * Access via: chrome.runtime background DevTools console
  *   globalThis.perfMonitor.start() / .stop() / .report()
@@ -16,7 +16,6 @@ interface BgSnapshot {
   activeRunsCount: number;
   sidepanelPorts: number;
   contentPorts: number;
-  relayConnected: boolean;
 }
 
 interface BgPerfReport {
@@ -63,7 +62,6 @@ class BgPerfMonitor {
       activeRunsCount: svc.activeRuns?.size ?? 0,
       sidepanelPorts: svc.sidepanelPorts?.size ?? 0,
       contentPorts: svc.contentPorts?.size ?? 0,
-      relayConnected: svc.relayBridge?.isConnected?.() ?? false,
     };
     this._snapshots.push(snap);
     if (this._snapshots.length > this._maxSnapshots) {
@@ -131,7 +129,6 @@ class BgPerfMonitor {
         activeRuns: s.activeRunsCount,
         sidepanelPorts: s.sidepanelPorts,
         contentPorts: s.contentPorts,
-        relay: s.relayConnected ? 'connected' : 'disconnected',
       })),
     );
   }

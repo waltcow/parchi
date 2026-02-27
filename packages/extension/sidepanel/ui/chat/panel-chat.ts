@@ -172,7 +172,7 @@ const sendRuntimeMessageWithRetry = async (payload: Record<string, unknown>, ret
     this.hideRecordedContextBadge?.();
     this.updateStatus('Error: ' + error.message, 'error');
     this.elements.composer?.classList.remove('running');
-    this.displayAssistantMessage('Sorry, an error occurred: ' + error.message);
+    this.displayAssistantMessage('抱歉，发生错误：' + error.message);
   }
 };
 
@@ -182,7 +182,7 @@ const sendRuntimeMessageWithRetry = async (payload: Record<string, unknown>, ret
   const messageDiv = document.createElement('div');
   messageDiv.className = 'message user';
   messageDiv.innerHTML = `
-      <div class="message-header">You</div>
+      <div class="message-header">你</div>
       <div class="message-content">${this.escapeHtml(content)}</div>
     `;
   turn.appendChild(messageDiv);
@@ -199,7 +199,7 @@ const sendRuntimeMessageWithRetry = async (payload: Record<string, unknown>, ret
   const container = document.createElement('div');
   container.className = 'message summary';
   container.innerHTML = `
-      <div class="summary-header">Context compacted</div>
+      <div class="summary-header">上下文已压缩</div>
       <div class="summary-body">${this.renderMarkdown(content)}</div>
     `;
   this.elements.chatMessages.appendChild(container);

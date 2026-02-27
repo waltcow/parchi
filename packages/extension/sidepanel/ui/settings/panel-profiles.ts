@@ -448,7 +448,7 @@ const resizeProfilePromptInput = (textarea: HTMLTextAreaElement | null) => {
   this.editProfile?.(name, true);
   this.fetchAvailableModels(); // This now repopulates the composer dropdown with all profiles
   if (!quiet) {
-    this.updateStatus(`Switched to "${name}"`, 'success');
+    this.updateStatus(`已切换到 "${name}"`, 'success');
   }
 };
 

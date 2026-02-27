@@ -17,7 +17,6 @@ const isFirefox = targetBrowser === 'firefox';
 const manifestName = isFirefox ? 'manifest.firefox.json' : 'manifest.json';
 const distName = isFirefox ? 'dist-firefox' : 'dist';
 const distDir = path.join(rootDir, distName);
-const relayDistDir = path.join(rootDir, 'dist-relay');
 const extensionRoot = path.join(rootDir, 'packages', 'extension');
 const parseEnvText = (text) => {
   const parsed = {};
@@ -59,10 +58,8 @@ const loadBuildEnv = () => {
 
 loadBuildEnv();
 
-const convexUrl = String(process.env.CONVEX_URL || '').trim();
 const perfDebug = (process.env.PERF_DEBUG || '').toLowerCase() === 'true';
 const buildDefines = {
-  __CONVEX_URL__: JSON.stringify(convexUrl),
   __PERF_DEBUG__: JSON.stringify(perfDebug),
 };
 
@@ -96,7 +93,6 @@ const copyDirFiltered = (src, dest, filter) => {
 
 const run = async () => {
   cleanDir(distDir);
-  cleanDir(relayDistDir);
 
   execSync('tsc -p tsconfig.json --noEmit', { stdio: 'inherit' });
 
@@ -143,7 +139,6 @@ const run = async () => {
       path.join(rootDir, 'tests', 'e2e', 'run-e2e.ts'),
       path.join(rootDir, 'tests', 'e2e', 'test-browser-tools.ts'),
       path.join(rootDir, 'tests', 'api', 'run-api-tests.ts'),
-      path.join(rootDir, 'tests', 'relay', 'run-relay-tests.ts'),
       path.join(rootDir, 'tests', 'perf', 'run-perf-profile.ts'),
     ],
     outdir: distDir,
@@ -157,26 +152,6 @@ const run = async () => {
     define: buildDefines,
     packages: 'external',
     external: ['chromium-bidi/lib/cjs/bidiMapper/BidiMapper', 'chromium-bidi/lib/cjs/cdp/CdpConnection'],
-  });
-
-  // Build relay daemon + CLI (Node-only; separate dist folder so it isn't shipped with the extension bundle)
-  await esbuild.build({
-    entryPoints: {
-      'relay-daemon': path.join(rootDir, 'packages', 'relay-service', 'src', 'relay-daemon.ts'),
-      relay: path.join(rootDir, 'packages', 'relay-service', 'src', 'cli.ts'),
-    },
-    outdir: relayDistDir,
-    bundle: true,
-    format: 'esm',
-    platform: 'node',
-    target: 'es2022',
-    sourcemap: true,
-    logLevel: 'info',
-    define: buildDefines,
-    packages: 'external',
-    banner: {
-      js: '#!/usr/bin/env node',
-    },
   });
 
   const manifestPath = path.join(extensionRoot, manifestName);

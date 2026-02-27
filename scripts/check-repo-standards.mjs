@@ -6,8 +6,8 @@ import path from 'node:path';
 
 const DEFAULT_MAX_LINES = 300;
 const SOURCE_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx', '.css', '.html']);
-const MODULE_CONTEXT_PACKAGE_ROOTS = new Set(['backend', 'extension', 'relay-service', 'shared']);
-const LINE_COUNT_IGNORE_SEGMENTS = ['dist/', 'dist-firefox/', 'dist-relay/', 'node_modules/'];
+const MODULE_CONTEXT_PACKAGE_ROOTS = new Set(['backend', 'extension', 'shared']);
+const LINE_COUNT_IGNORE_SEGMENTS = ['dist/', 'dist-firefox/', 'node_modules/'];
 const LINE_COUNT_IGNORE_PATHS = [/^packages\/backend\/convex\/_generated\//, /^docs\//];
 
 const parseArgs = () => {

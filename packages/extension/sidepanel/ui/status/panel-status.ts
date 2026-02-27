@@ -532,10 +532,10 @@ const escapeModelHtml = (text: string) =>
     const selected = this.configs[selectedProfile] || {};
     const providerLabel = selected.provider || 'unconfigured';
     const modelLabel = selected.model || 'no-model';
-    this.updateStatus(`Switched to ${providerLabel}/${modelLabel}`, 'success');
+    this.updateStatus(`已切换到 ${providerLabel}/${modelLabel}`, 'success');
   } catch (error) {
     console.error('[Parchi] Failed to persist selected profile:', error);
-    this.updateStatus('Failed to switch profile', 'error');
+    this.updateStatus('切换配置失败', 'error');
   }
 };
 

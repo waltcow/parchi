@@ -12,8 +12,6 @@
     "build:firefox": "BROWSER=firefox node scripts/build.mjs",
     "build:firefox:xpi": "npm run build:firefox && node scripts/build-firefox-xpi.mjs",
     "backend:dev": "cd packages/backend && npx convex dev",
-    "relay:daemon": "node dist-relay/relay-daemon.js",
-    "relay": "node dist-relay/relay.js",
     "validate": "node scripts/build.mjs && node dist/tests/validate-extension.js",
     "test": "node scripts/build.mjs && node dist/tests/run-tests.js",
     "test:unit": "node scripts/build.mjs && node dist/tests/unit/run-unit-tests.js",
@@ -41,9 +39,6 @@
   ],
   "author": "",
   "license": "MIT",
-  "bin": {
-    "parchi-relay": "dist-relay/relay.js"
-  },
   "dependencies": {
     "@ai-sdk/anthropic": "3.0.17",
     "@ai-sdk/openai": "3.0.13",
@@ -52,14 +47,12 @@
     "@convex-dev/auth": "0.0.90",
     "ai": "6.0.42",
     "convex": "1.31.7",
-    "stripe": "18.5.0",
-    "ws": "8.18.3"
+    "stripe": "18.5.0"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@types/chrome": "0.0.268",
     "@types/node": "22.10.5",
-    "@types/ws": "8.18.1",
     "agent-browser": "^0.11.1",
     "esbuild": "0.27.2",
     "marked": "17.0.1",

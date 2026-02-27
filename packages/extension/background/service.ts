@@ -5,7 +5,6 @@ import type { RunPlan } from '../../shared/src/plan.js';
 import { RUNTIME_MESSAGE_SCHEMA_VERSION } from '../../shared/src/runtime-messages.js';
 import { PARCHI_STORAGE_KEYS } from '../../shared/src/settings.js';
 import {
-  getRuntimeFeatureFlags,
   setupActionClickOpensPanel,
   setupKimiUserAgentHeaderSupport,
 } from './browser-compat.js';
@@ -28,12 +27,9 @@ import { extractTextFromResponseMessages, extractThinking } from '../ai/message-
 import { toModelMessages } from '../ai/model-convert.js';
 import { isValidFinalResponse } from '../ai/retry-engine.js';
 import { buildToolSet, describeImageWithModel, normalizeOpenRouterModelId, resolveLanguageModel } from '../ai/sdk-client.js';
-import { refreshRuntimeAuthSession } from '../convex/client.js';
 import type { ComposedSkill } from '../../shared/src/recording.js';
 import { RecordingCoordinator } from '../recording/recording-coordinator.js';
-import { RelayBridge } from '../relay/relay-bridge.js';
 import { BrowserTools } from '../tools/browser-tools.js';
-import { getActiveTab } from '../utils/active-tab.js';
 
 type RunMeta = {
   runId: string;
@@ -73,10 +69,6 @@ export class BackgroundService {
   currentPlan: RunPlan | null;
   subAgentCount: number;
   subAgentProfileCursor: number;
-  relay: RelayBridge;
-  relayActiveRunIds: Set<string>;
-  private applyRelayConfig: () => Promise<void>;
-  private relayKeepalivePorts: Set<chrome.runtime.Port>;
   private sidepanelLifecyclePorts: Set<chrome.runtime.Port>;
   // State tracking for enforcement
   lastBrowserAction: string | null;
@@ -94,7 +86,7 @@ export class BackgroundService {
     string,
     {
       runMeta: RunMeta;
-      origin: 'sidepanel' | 'relay';
+      origin: 'sidepanel';
       controller: AbortController;
     }
   >;
@@ -110,8 +102,6 @@ export class BackgroundService {
     this.currentPlan = null;
     this.subAgentCount = 0;
     this.subAgentProfileCursor = 0;
-    this.relayActiveRunIds = new Set();
-    this.relayKeepalivePorts = new Set();
     this.sidepanelLifecyclePorts = new Set();
     this.activeRuns = new Map();
     this.activeRunIdBySessionId = new Map();
@@ -127,80 +117,7 @@ export class BackgroundService {
     this.kimiHeaderMode = 'none';
     this.kimiWarningSent = false;
 
-    this.relay = new RelayBridge({
-      getHelloPayload: async () => {
-        const manifest = chrome.runtime.getManifest();
-        const stored = await chrome.storage.local.get(['relayAgentId']);
-        let agentId = typeof stored.relayAgentId === 'string' ? stored.relayAgentId : '';
-        if (!agentId) {
-          agentId = `agent-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-          await chrome.storage.local.set({ relayAgentId: agentId });
-        }
-        return {
-          agentId,
-          name: 'parchi-extension',
-          version: String(manifest.version || ''),
-          browser: getRuntimeFeatureFlags().browser,
-          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
-          capabilities: { tools: true, agentRun: true },
-        };
-      },
-      onRequest: async (req) => this.handleRelayRpc(req.method, req.params),
-      onStatus: (status) => {
-        const payload: Record<string, any> = { relayConnected: !!status.connected };
-        if (status.connected) payload.relayLastConnectedAt = Date.now();
-        if (status.lastError !== undefined) payload.relayLastError = status.lastError;
-        chrome.storage.local.set(payload).catch(() => {});
-      },
-    });
-
-    this.applyRelayConfig = async () => {
-      const stored = await chrome.storage.local.get(['relayEnabled', 'relayUrl', 'relayToken']);
-      const enabled = stored.relayEnabled === true || stored.relayEnabled === 'true';
-      const url = typeof stored.relayUrl === 'string' ? stored.relayUrl.trim() : '';
-      const token = typeof stored.relayToken === 'string' ? stored.relayToken.trim() : '';
-      if (enabled && (!url || !token)) {
-        await chrome.storage.local
-          .set({ relayConnected: false, relayLastError: 'Missing relay URL or token' })
-          .catch(() => {});
-      }
-      if (enabled && url && token) {
-        await this.ensureRelayKeepalive();
-      } else {
-        await this.closeRelayKeepalive();
-      }
-      this.relay.configure({ enabled, url, token });
-    };
-
     this.init();
-  }
-
-  private async ensureRelayKeepalive() {
-    const offscreen = (chrome as any).offscreen;
-    if (!offscreen?.createDocument) return;
-    try {
-      const hasDoc = typeof offscreen.hasDocument === 'function' ? await offscreen.hasDocument() : false;
-      if (hasDoc) return;
-      await offscreen.createDocument({
-        url: 'offscreen/offscreen.html',
-        reasons: [offscreen.Reason?.DOM_PARSER || 'DOM_PARSER'],
-        justification: 'Keep relay WebSocket alive for the extension relay agent in MV3.',
-      });
-    } catch (err) {
-      console.warn('[relay] offscreen keepalive failed:', err);
-    }
-  }
-
-  private async closeRelayKeepalive() {
-    const offscreen = (chrome as any).offscreen;
-    if (!offscreen?.closeDocument) return;
-    try {
-      const hasDoc = typeof offscreen.hasDocument === 'function' ? await offscreen.hasDocument() : false;
-      if (!hasDoc) return;
-      await offscreen.closeDocument();
-    } catch (err) {
-      // Ignore - offscreen may not exist or may already be closed.
-    }
   }
 
   init() {
@@ -231,25 +148,7 @@ export class BackgroundService {
         console.warn('Failed to configure Kimi User-Agent header support:', error);
       });
 
-    // Ensure relay can come up after a browser restart without needing the UI opened first.
-    chrome.runtime.onStartup?.addListener(() => {
-      void this.applyRelayConfig();
-    });
-    chrome.runtime.onInstalled?.addListener(() => {
-      void this.applyRelayConfig();
-    });
-
     chrome.runtime.onConnect.addListener((port) => {
-      if (port.name === 'relay-keepalive') {
-        this.relayKeepalivePorts.add(port);
-        port.onDisconnect.addListener(() => {
-          this.relayKeepalivePorts.delete(port);
-        });
-        // Optional: accept pings; no response required.
-        port.onMessage.addListener(() => {});
-        return;
-      }
-
       if (port.name === 'sidepanel-lifecycle') {
         this.sidepanelLifecyclePorts.add(port);
         port.onMessage.addListener((message) => {
@@ -272,152 +171,11 @@ export class BackgroundService {
         });
       }
     });
-
-    void this.initRelay();
-  }
-
-  async initRelay() {
-    try {
-      await this.applyRelayConfig();
-    } catch (err) {
-      console.warn('[relay] init failed:', err);
-    }
-
-    chrome.storage.onChanged.addListener((_changes, areaName) => {
-      if (areaName !== 'local') return;
-      void this.applyRelayConfig();
-    });
-  }
-
-  async handleRelayRpc(method: string, params: unknown) {
-    switch (method) {
-      case 'tools.list':
-        const settings = await chrome.storage.local.get([
-          'activeConfig',
-          'provider',
-          'apiKey',
-          'model',
-          'customEndpoint',
-          'extraHeaders',
-          'systemPrompt',
-          'configs',
-          'useOrchestrator',
-          'orchestratorProfile',
-          'visionBridge',
-          'visionProfile',
-          'enableScreenshots',
-          'sendScreenshotsAsImages',
-          'screenshotQuality',
-          'showThinking',
-          'streamResponses',
-          'temperature',
-          'maxTokens',
-          'timeout',
-          'contextLimit',
-          'toolPermissions',
-          'allowedDomains',
-        ]);
-        const activeProfileName = (settings as any).activeConfig || 'default';
-        const activeProfile = this.resolveProfile(settings as any, activeProfileName);
-        const orchestratorEnabled = (settings as any).useOrchestrator === true;
-        const teamProfiles = this.resolveTeamProfiles(settings as any);
-        const visionToolsEnabled = this.isVisionModelProfile(activeProfile);
-        return this.getToolsForSession(settings as any, orchestratorEnabled, teamProfiles, visionToolsEnabled);
-
-      case 'tool.call': {
-        const tool = typeof (params as any)?.tool === 'string' ? (params as any).tool : '';
-        const sessionId =
-          typeof (params as any)?.sessionId === 'string'
-            ? String((params as any).sessionId)
-            : this.currentSessionId || 'relay';
-        const args = (params as any)?.args;
-        if (!tool) throw new Error('tool.call: missing tool');
-        const safeArgs = args && typeof args === 'object' && !Array.isArray(args) ? (args as Record<string, any>) : {};
-        const settings = await chrome.storage.local.get(['toolPermissions', 'allowedDomains']);
-        const perm = await this.checkToolPermission(tool, safeArgs, settings, sessionId);
-        if (!perm.allowed) {
-          throw new Error(perm.reason || 'Tool blocked by policy');
-        }
-        return await this.getBrowserTools(sessionId).executeTool(tool, safeArgs);
-      }
-
-      case 'session.setTabs': {
-        const sessionId =
-          typeof (params as any)?.sessionId === 'string'
-            ? String((params as any).sessionId)
-            : this.currentSessionId || 'relay';
-        const ids = Array.isArray((params as any)?.tabIds) ? (params as any).tabIds : [];
-        const tabIds = ids.map((n: any) => Number(n)).filter((n: any) => Number.isFinite(n) && n > 0);
-        const tabs: chrome.tabs.Tab[] = [];
-        for (const tabId of tabIds) {
-          try {
-            const tab = await chrome.tabs.get(tabId);
-            if (tab) tabs.push(tab);
-          } catch {}
-        }
-        await this.getBrowserTools(sessionId).configureSessionTabs(tabs, { title: 'Parchi', color: 'blue' });
-        return { ok: true, tabIds: tabs.map((t) => t.id).filter((id): id is number => typeof id === 'number') };
-      }
-
-      case 'settings.get': {
-        const keys = (params as any)?.keys;
-        if (!Array.isArray(keys)) throw new Error('settings.get: keys must be an array');
-        return await chrome.storage.local.get(keys);
-      }
-
-      case 'settings.set': {
-        const data = (params as any)?.data;
-        if (!data || typeof data !== 'object' || Array.isArray(data))
-          throw new Error('settings.set: data must be an object');
-        await chrome.storage.local.set(data);
-        return { ok: true };
-      }
-
-      case 'agent.run': {
-        const prompt = typeof (params as any)?.prompt === 'string' ? String((params as any).prompt) : '';
-        if (!prompt.trim()) throw new Error('agent.run: missing prompt');
-        const selectedTabIds = Array.isArray((params as any)?.selectedTabIds) ? (params as any).selectedTabIds : null;
-        const sessionId =
-          typeof (params as any)?.sessionId === 'string' ? (params as any).sessionId : `session-${Date.now()}`;
-        const runId = `run-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-        const turnId = `turn-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-
-        const selectedTabs: chrome.tabs.Tab[] = [];
-        if (Array.isArray(selectedTabIds) && selectedTabIds.length) {
-          for (const rawId of selectedTabIds) {
-            const tabId = Number(rawId);
-            if (!Number.isFinite(tabId) || tabId <= 0) continue;
-            try {
-              const tab = await chrome.tabs.get(tabId);
-              if (tab) selectedTabs.push(tab);
-            } catch {}
-          }
-        }
-        if (selectedTabs.length === 0) {
-          const activeTab = await getActiveTab();
-          if (activeTab) selectedTabs.push(activeTab);
-        }
-
-        // Fire-and-forget; relay will receive runtime events and run.done.
-        void this.processUserMessage(prompt, [], selectedTabs, sessionId, { runId, turnId, origin: 'relay' });
-
-        return { runId, sessionId };
-      }
-
-      default:
-        throw new Error(`Unknown method: ${method}`);
-    }
   }
 
   async handleMessage(message, _sender, sendResponse) {
     try {
       switch (message.type) {
-        case 'relay_reconfigure': {
-          await this.applyRelayConfig();
-          sendResponse({ success: true });
-          break;
-        }
-
         case 'user_message': {
           const sessionId = message.sessionId || `session-${Date.now()}`;
           const userMessage = typeof message.message === 'string' ? message.message : '';
@@ -548,7 +306,7 @@ export class BackgroundService {
     conversationHistory: Message[],
     selectedTabs: chrome.tabs.Tab[],
     sessionId: string,
-    meta?: Partial<RunMeta> & { origin?: 'sidepanel' | 'relay' },
+    meta?: Partial<RunMeta> & { origin?: 'sidepanel' },
     recordedContext?: any,
   ) {
     const runMeta: RunMeta = {
@@ -563,7 +321,6 @@ export class BackgroundService {
       sessionId,
     };
     const origin = meta?.origin || 'sidepanel';
-    if (origin === 'relay') this.relayActiveRunIds.add(runMeta.runId);
     const controller = this.registerActiveRun(runMeta, origin);
     const abortSignal = controller.signal;
     const sessionState = this.getSessionState(sessionId);
@@ -602,7 +359,7 @@ export class BackgroundService {
 
       this.currentSettings = settings;
       // Track the most recently active session for legacy callers that don't
-      // supply a sessionId (e.g., some relay RPC usage).
+      // supply a sessionId.
       this.currentSessionId = sessionId;
 
       try {
@@ -636,10 +393,9 @@ export class BackgroundService {
       let visionProfile =
         settings.visionBridge !== false ? this.resolveProfile(settings, visionProfileName || activeProfileName) : null;
 
-      // Paid-mode runs may happen long after the account tab refreshed auth.
       // Rehydrate/refresh proxy auth in-place so chat runs don't rely on stale tokens.
       if (!this.hasOwnApiKey(orchestratorProfile)) {
-        await this.refreshConvexProxyAuthSession(settings);
+        // no-op: paid proxy removed
       }
 
       const runtimeProfileResolution = this.resolveRuntimeModelProfile(orchestratorProfile, settings);
@@ -659,7 +415,7 @@ export class BackgroundService {
         useProxy: Boolean((orchestratorProfile as any)?.useProxy),
       };
       if (visionProfile && !this.hasOwnApiKey(visionProfile) && runtimeProfileResolution.route === 'proxy') {
-        visionProfile = this.applyConvexProxyProfile(visionProfile, settings);
+        // proxy removed
       }
 
       const kimiInUse =
@@ -681,7 +437,7 @@ export class BackgroundService {
       const showThinking = settings.showThinking !== false && settings.showThinking !== 'false';
       const enableAnthropicThinking =
         showThinking && (orchestratorProfile.provider === 'anthropic' || orchestratorProfile.provider === 'kimi' ||
-        ((orchestratorProfile.provider === 'openrouter' || orchestratorProfile.provider === 'parchi') &&
+        (orchestratorProfile.provider === 'openrouter' &&
           /claude/i.test(orchestratorProfile.model || '')));
 
       const [activeTab] = await chrome.tabs.query({
@@ -750,8 +506,7 @@ export class BackgroundService {
       let model = resolveLanguageModel(orchestratorProfile);
       const modelRetryOrder = [activeModelId];
       const openRouterLikeProvider =
-        String(orchestratorProfile.provider || '').toLowerCase() === 'openrouter' ||
-        String(orchestratorProfile.provider || '').toLowerCase() === 'parchi';
+        String(orchestratorProfile.provider || '').toLowerCase() === 'openrouter';
       if (openRouterLikeProvider) {
         if (!modelRetryOrder.includes('openrouter/auto')) modelRetryOrder.push('openrouter/auto');
         if (!modelRetryOrder.includes('openai/gpt-4o-mini')) modelRetryOrder.push('openai/gpt-4o-mini');
@@ -1111,22 +866,7 @@ export class BackgroundService {
               runtimeProfileResolution.route === 'proxy' &&
               (classified.category === 'auth' || statusCode === 401 || statusCode === 403);
             if (isProxyAuthFailure && !refreshedProxyAuthOnce) {
-              const refreshed = await this.refreshConvexProxyAuthSession(settings, { force: true });
-              if (refreshed) {
-                refreshedProxyAuthOnce = true;
-                if ((orchestratorProfile as any)?.useProxy) {
-                  (orchestratorProfile as any).proxyAuthToken = String(settings.convexAccessToken || '').trim();
-                }
-                if ((visionProfile as any)?.useProxy) {
-                  (visionProfile as any).proxyAuthToken = String(settings.convexAccessToken || '').trim();
-                }
-                this.sendRuntime(runMeta, {
-                  type: 'run_warning',
-                  message: 'Refreshing paid runtime session and retrying request.',
-                });
-                idx -= 1;
-                continue;
-              }
+              // proxy auth refresh removed
             }
             if (classified.category !== 'model') {
               throw error;
@@ -1457,7 +1197,6 @@ export class BackgroundService {
       });
     } finally {
       this.cleanupRun(runMeta, origin);
-      if (origin === 'relay') this.relayActiveRunIds.delete(runMeta.runId);
     }
   }
 
@@ -1468,19 +1207,11 @@ export class BackgroundService {
       model?: string;
       customEndpoint?: string;
       extraHeaders?: any;
-      convexUrl?: string;
-      convexAccessToken?: string;
-      convexSubscriptionStatus?: string;
-      convexSubscriptionPlan?: string;
-      accountModeChoice?: string;
     },
     prompt: string,
   ) {
     try {
       const runtimeSettings = settings as Record<string, any>;
-      if (!this.hasOwnApiKey({ apiKey: settings.apiKey || '' })) {
-        await this.refreshConvexProxyAuthSession(runtimeSettings);
-      }
 
       const runtimeProfile = this.resolveRuntimeModelProfile(
         {
@@ -2291,13 +2022,6 @@ Rules:
     try {
       active.controller.abort(note);
     } catch {}
-
-    if (active.origin === 'relay') {
-      this.relayActiveRunIds.delete(runId);
-      if (this.relay.isConnected()) {
-        this.relay.notify('run.done', { runId, status: 'stopped', note });
-      }
-    }
   }
 
   private stopRunBySession(sessionId: string, note = 'Stopped') {
@@ -2358,7 +2082,7 @@ Rules:
     return created;
   }
 
-  private registerActiveRun(runMeta: RunMeta, origin: 'sidepanel' | 'relay') {
+  private registerActiveRun(runMeta: RunMeta, origin: 'sidepanel') {
     // Allow parallel runs across sessions, but keep a single active run per
     // session to avoid interleaving output within the same chat.
     this.stopRunBySession(runMeta.sessionId, 'Superseded by a new message');
@@ -2369,7 +2093,7 @@ Rules:
     return controller;
   }
 
-  private cleanupRun(runMeta: RunMeta, origin: 'sidepanel' | 'relay') {
+  private cleanupRun(runMeta: RunMeta, origin: 'sidepanel') {
     const active = this.activeRuns.get(runMeta.runId);
     if (active && active.origin === origin) {
       this.activeRuns.delete(runMeta.runId);
@@ -2392,16 +2116,6 @@ Rules:
       ...payload,
     };
     this.sendToSidePanel(message);
-
-    if (this.relayActiveRunIds.has(runMeta.runId) && this.relay.isConnected()) {
-      this.relay.notify('run.event', { runId: runMeta.runId, event: message });
-      const type = typeof payload.type === 'string' ? payload.type : '';
-      if (type === 'assistant_final') {
-        this.relay.notify('run.done', { runId: runMeta.runId, status: 'completed', final: message });
-      } else if (type === 'run_error') {
-        this.relay.notify('run.done', { runId: runMeta.runId, status: 'failed', error: message });
-      }
-    }
   }
 
   sendToSidePanel(message) {
@@ -2606,78 +2320,7 @@ When a tool fails:
     return normalizeOpenRouterModelId(model);
   }
 
-  hasActivePaidSubscription(settings: Record<string, any> = {}) {
-    const mode = String(settings.accountModeChoice || '').toLowerCase();
-    if (mode !== 'paid') return false;
-    // Support both legacy subscriptions AND prepaid credits
-    const hasCredits = Number(settings.convexCreditBalanceCents || 0) > 0;
-    const status = String(settings.convexSubscriptionStatus || '').toLowerCase();
-    const plan = String(settings.convexSubscriptionPlan || '').toLowerCase();
-    const hasLegacySub = plan === 'pro' && status === 'active';
-    return hasCredits || hasLegacySub;
-  }
-
-  resolveConvexProxyBaseUrl(settings: Record<string, any> = {}) {
-    const explicitSite = String(settings.convexSiteUrl || '').trim();
-    const rawBase = explicitSite || String(settings.convexUrl || '').trim();
-    if (!rawBase) return '';
-    try {
-      const url = new URL(rawBase);
-      if (url.hostname.endsWith('.convex.cloud')) {
-        url.hostname = url.hostname.replace(/\.convex\.cloud$/i, '.convex.site');
-      }
-      return `${url.origin}${url.pathname}`.replace(/\/+$/, '');
-    } catch {
-      return rawBase.replace(/\/+$/, '');
-    }
-  }
-
-  canUseConvexProxy(settings: Record<string, any> = {}) {
-    return Boolean(this.resolveConvexProxyBaseUrl(settings) && String(settings.convexAccessToken || '').trim());
-  }
-
-  async refreshConvexProxyAuthSession(settings: Record<string, any>, options: { force?: boolean } = {}) {
-    const mode = String(settings.accountModeChoice || '').trim().toLowerCase();
-    if (mode !== 'paid') return false;
-    if (!this.resolveConvexProxyBaseUrl(settings)) return false;
-
-    try {
-      const session = await refreshRuntimeAuthSession({ force: options.force === true });
-      const accessToken = String(session.accessToken || '').trim();
-      if (!accessToken) return false;
-      settings.convexAccessToken = accessToken;
-      settings.convexRefreshToken = String(session.refreshToken || '').trim();
-      settings.convexTokenExpiresAt = Number(session.expiresAt || 0);
-      return true;
-    } catch (error) {
-      console.warn('[paid-auth] Failed to refresh convex proxy auth session:', error);
-      return false;
-    }
-  }
-
-  applyConvexProxyProfile(profile: Record<string, any>, settings: Record<string, any>) {
-    const preferredProvider =
-      profile?.provider === 'kimi' ? 'kimi'
-      : profile?.provider === 'anthropic' ? 'anthropic'
-      : profile?.provider === 'openrouter' || profile?.provider === 'parchi' ? 'openrouter'
-      : 'openai';
-    const requestedModel = String(profile?.model || settings.model || '').trim();
-    const normalizedModel = this.normalizeProxyModelId(preferredProvider, requestedModel);
-    const proxyBaseUrl = this.resolveConvexProxyBaseUrl(settings);
-    return {
-      provider: preferredProvider,
-      apiKey: profile?.apiKey || '',
-      model: normalizedModel,
-      customEndpoint: profile?.customEndpoint || '',
-      extraHeaders: profile?.extraHeaders || {},
-      useProxy: true,
-      proxyBaseUrl,
-      proxyAuthToken: String(settings.convexAccessToken || '').trim(),
-      proxyProvider: preferredProvider,
-    };
-  }
-
-  resolveRuntimeModelProfile(profile: Record<string, any>, settings: Record<string, any>) {
+  resolveRuntimeModelProfile(profile: Record<string, any>, _settings: Record<string, any>) {
     if (!this.hasConfiguredModel(profile)) {
       return {
         allowed: false,
@@ -2689,26 +2332,11 @@ When a tool fails:
     if (this.hasOwnApiKey(profile)) {
       return { allowed: true, route: 'byok', profile };
     }
-    if (!this.hasActivePaidSubscription(settings)) {
-      return {
-        allowed: false,
-        route: 'none',
-        profile,
-        errorMessage: 'No access configured. Add your own API key in Setup, or buy credits in Account & Billing.',
-      };
-    }
-    if (!this.canUseConvexProxy(settings)) {
-      return {
-        allowed: false,
-        route: 'none',
-        profile,
-        errorMessage: 'Paid access is selected but auth is missing. Sign in again in Account & Billing, then click Refresh.',
-      };
-    }
     return {
-      allowed: true,
-      route: 'proxy',
-      profile: this.applyConvexProxyProfile(profile, settings),
+      allowed: false,
+      route: 'none',
+      profile,
+      errorMessage: 'No access configured. Add your own API key in Setup.',
     };
   }
 
@@ -2756,7 +2384,7 @@ When a tool fails:
     if (!provider) return false;
     if (provider === 'anthropic') return true;
     if (provider === 'kimi') return true;
-    if (provider === 'openrouter' || provider === 'parchi') {
+    if (provider === 'openrouter') {
       return /(claude|gpt-4o|gpt-4-turbo|gemini|vision)/i.test(model);
     }
     if (provider === 'openai') {

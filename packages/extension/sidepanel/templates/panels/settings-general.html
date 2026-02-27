@@ -1,107 +1,107 @@
 <!-- ===== SETUP TAB ===== -->
 <div class="settings-tab-pane" data-pane="setup">
     <div class="form-group">
-        <label for="activeConfig">Active Profile</label>
+        <label for="activeConfig">当前配置</label>
         <select id="activeConfig">
-            <option value="default">Default</option>
+            <option value="default">默认</option>
         </select>
     </div>
     <div class="form-group">
-        <label for="provider">Provider</label>
+        <label for="provider">供应商</label>
         <select id="provider">
-            <option value="">Add provider...</option>
+            <option value="">添加供应商...</option>
             <option value="anthropic">Anthropic (Claude)</option>
             <option value="openai">OpenAI</option>
-            <option value="kimi">Kimi (Coding)</option>
+            <option value="kimi">Kimi (编程)</option>
             <option value="openrouter">OpenRouter</option>
-            <option value="custom">Custom</option>
+            <option value="custom">自定义</option>
         </select>
     </div>
     <div class="form-group">
-        <label for="apiKey">API Key</label>
-        <input type="password" id="apiKey" placeholder="Enter your API key..." />
-        <small>Stored locally. Never sent to our servers.</small>
+        <label for="apiKey">API 密钥</label>
+        <input type="password" id="apiKey" placeholder="输入您的 API 密钥..." />
+        <small>本地存储。永远不会发送到我们的服务器。</small>
     </div>
     <div class="form-group">
-        <label for="model">Model</label>
-        <input type="text" id="model" list="modelSuggestions" placeholder="e.g., claude-sonnet-4-20250514" />
+        <label for="model">模型</label>
+        <input type="text" id="model" list="modelSuggestions" placeholder="例如 claude-sonnet-4-20250514" />
         <datalist id="modelSuggestions"></datalist>
-        <small id="modelHint">Recommended: claude-sonnet-4-20250514</small>
+        <small id="modelHint">推荐: claude-sonnet-4-20250514</small>
     </div>
     <div class="form-group" id="customEndpointGroup">
-        <label for="customEndpoint">API URL <span class="optional-badge">optional</span></label>
+        <label for="customEndpoint">API 地址 <span class="optional-badge">可选</span></label>
         <input type="text" id="customEndpoint" placeholder="https://openrouter.ai/api/v1" />
     </div>
     <div class="form-group" id="customHeadersGroup">
-        <label for="customHeaders">Extra Headers <span class="optional-badge">JSON</span></label>
+        <label for="customHeaders">额外请求头 <span class="optional-badge">JSON</span></label>
         <textarea id="customHeaders" rows="2" placeholder='{"HTTP-Referer":"https://your.app"}'></textarea>
     </div>
     <button id="saveSettingsBtn" class="btn btn-primary" style="width: 100%; margin-top: 4px;">
-        Save Settings
+        保存设置
     </button>
 </div>
 
 <!-- ===== MODEL TAB ===== -->
 <div class="settings-tab-pane" data-pane="model">
     <div class="form-group">
-        <label for="temperature">Temperature <span class="form-value" id="temperatureValue">0.7</span></label>
+        <label for="temperature">温度 <span class="form-value" id="temperatureValue">0.7</span></label>
         <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.7" />
-        <small>Lower = focused, Higher = creative</small>
+        <small>越低越专注，越高越创意</small>
     </div>
     <div class="form-group">
-        <label for="maxTokens">Max Output Tokens</label>
+        <label for="maxTokens">最大输出 Tokens</label>
         <input type="number" id="maxTokens" value="4096" min="256" max="32000" />
     </div>
     <div class="form-group">
-        <label for="contextLimit">Context Limit</label>
+        <label for="contextLimit">上下文限制</label>
         <input type="number" id="contextLimit" value="200000" min="4000" max="2000000" />
     </div>
     <div class="settings-divider"></div>
     <div class="form-group">
-        <label for="streamResponses">Stream Responses</label>
+        <label for="streamResponses">流式响应</label>
         <select id="streamResponses">
-            <option value="true">Enabled</option>
-            <option value="false">Disabled</option>
+            <option value="true">启用</option>
+            <option value="false">禁用</option>
         </select>
     </div>
     <div class="form-group">
-        <label for="showThinking">Show Reasoning</label>
+        <label for="showThinking">显示推理</label>
         <select id="showThinking">
-            <option value="true">Show</option>
-            <option value="false">Hide</option>
+            <option value="true">显示</option>
+            <option value="false">隐藏</option>
         </select>
     </div>
     <div class="form-group">
-        <label for="saveHistory">Save History</label>
+        <label for="saveHistory">保存历史</label>
         <select id="saveHistory">
-            <option value="true">Enabled</option>
-            <option value="false">Disabled</option>
+            <option value="true">启用</option>
+            <option value="false">禁用</option>
         </select>
     </div>
     <div class="settings-divider"></div>
     <div class="form-group">
-        <label for="uiZoom">Text Size <span class="form-value" id="uiZoomValue">100%</span></label>
+        <label for="uiZoom">字体大小 <span class="form-value" id="uiZoomValue">100%</span></label>
         <input type="range" id="uiZoom" min="0.85" max="1.25" step="0.05" value="1" />
     </div>
     <div class="form-group">
-        <label for="fontPreset">Typography</label>
+        <label for="fontPreset">字体</label>
         <select id="fontPreset">
-            <option value="default">Default</option>
+            <option value="default">默认</option>
             <option value="geist">Geist</option>
-            <option value="soft">Soft</option>
+            <option value="soft">柔和</option>
         </select>
     </div>
     <div class="form-group">
-        <label for="fontStylePreset">Font Style</label>
+        <label for="fontStylePreset">字重</label>
         <select id="fontStylePreset">
-            <option value="normal">Regular</option>
-            <option value="medium">Medium</option>
-            <option value="semibold">Semibold</option>
+            <option value="normal">常规</option>
+            <option value="medium">中等</option>
+            <option value="semibold">半粗</option>
         </select>
     </div>
     <div class="settings-divider"></div>
     <div class="form-group">
-        <label for="themeSelect">Theme</label>
+        <label for="themeSelect">主题</label>
         <div id="themeGrid" class="theme-grid"></div>
     </div>
 </div>
@@ -109,114 +109,85 @@
 <!-- ===== BROWSER TAB ===== -->
 <div class="settings-tab-pane" data-pane="browser">
     <div class="form-group">
-        <label for="enableScreenshots">Screenshots</label>
+        <label for="enableScreenshots">截图</label>
         <select id="enableScreenshots">
-            <option value="true">Enabled</option>
-            <option value="false">Disabled</option>
+            <option value="true">启用</option>
+            <option value="false">禁用</option>
         </select>
     </div>
     <div class="form-group">
-        <label for="sendScreenshotsAsImages">Send Screenshots as</label>
+        <label for="sendScreenshotsAsImages">发送截图方式</label>
         <select id="sendScreenshotsAsImages">
-            <option value="true">Images (vision models)</option>
-            <option value="false">Text description</option>
+            <option value="true">图片 (视觉模型)</option>
+            <option value="false">文本描述</option>
         </select>
     </div>
     <div class="form-group">
-        <label for="allowedDomains">Allowed Domains</label>
-        <input type="text" id="allowedDomains" placeholder="Leave empty for all domains" />
-        <small>Comma-separated, e.g.: google.com, github.com</small>
+        <label for="allowedDomains">允许的域名</label>
+        <input type="text" id="allowedDomains" placeholder="留空则允许所有域名" />
+        <small>用逗号分隔，例如：google.com, github.com</small>
     </div>
     <div class="settings-divider"></div>
     <div class="form-group">
-        <label for="visionProfile">Vision Profile</label>
+        <label for="visionProfile">视觉配置</label>
         <select id="visionProfile">
-            <option value="">Same as main</option>
+            <option value="">与主配置相同</option>
         </select>
     </div>
     <div class="form-group">
-        <label for="visionBridge">Vision Bridge</label>
+        <label for="visionBridge">视觉桥接</label>
         <select id="visionBridge">
-            <option value="true">Enabled</option>
-            <option value="false">Disabled</option>
+            <option value="true">启用</option>
+            <option value="false">禁用</option>
         </select>
-        <small>Describe screenshots for non-vision models</small>
+        <small>为非视觉模型描述截图</small>
     </div>
 </div>
 
 <!-- ===== NETWORK TAB ===== -->
 <div class="settings-tab-pane" data-pane="network">
-    <div class="settings-section-label">Relay</div>
+    <div class="settings-section-label">编排器</div>
     <div class="form-group">
-        <label for="relayEnabled">Enable Relay</label>
-        <select id="relayEnabled">
-            <option value="false">Disabled</option>
-            <option value="true">Enabled</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="relayUrl">Relay URL</label>
-        <input type="text" id="relayUrl" placeholder="http://127.0.0.1:17373" />
-    </div>
-    <div class="form-group">
-        <label for="relayToken">Relay Token</label>
-        <input type="password" id="relayToken" placeholder="PARCHI_RELAY_TOKEN" />
-    </div>
-    <div class="form-group">
-        <label>Connection</label>
-        <div class="relay-status-row">
-            <span id="relayConnectedBadge" class="status-pill">Disconnected</span>
-            <span id="relayLastErrorText" class="relay-last-error"></span>
-        </div>
-    </div>
-    <div class="form-row">
-        <button id="saveRelayBtn" class="btn btn-primary" style="flex: 1;">Apply</button>
-        <button id="copyRelayEnvBtn" class="btn btn-secondary" style="flex: 1;">Copy Env Vars</button>
-    </div>
-
-    <div class="settings-divider"></div>
-    <div class="settings-section-label">Orchestrator</div>
-    <div class="form-group">
-        <label for="orchestratorToggle">Orchestrator Mode</label>
+        <label for="orchestratorToggle">编排器模式</label>
         <select id="orchestratorToggle">
-            <option value="false">Disabled</option>
-            <option value="true">Enabled</option>
+            <option value="false">禁用</option>
+            <option value="true">启用</option>
         </select>
     </div>
     <div class="form-group">
-        <label for="orchestratorProfile">Orchestrator Profile</label>
+        <label for="orchestratorProfile">编排器配置</label>
         <select id="orchestratorProfile">
-            <option value="">Same as main</option>
+            <option value="">与主配置相同</option>
         </select>
     </div>
 
     <div class="settings-divider"></div>
-    <div class="settings-section-label">Import / Export</div>
+    <div class="settings-section-label">导入 / 导出</div>
     <div class="form-row">
-        <button id="exportSettingsBtn" class="btn btn-secondary" style="flex: 1;">Export</button>
-        <button id="importSettingsBtn" class="btn btn-secondary" style="flex: 1;">Import</button>
+        <button id="exportSettingsBtn" class="btn btn-secondary" style="flex: 1;">导出</button>
+        <button id="importSettingsBtn" class="btn btn-secondary" style="flex: 1;">导入</button>
         <input id="importSettingsInput" type="file" accept="application/json" style="display: none;" />
     </div>
-    <small>Export all profiles to JSON. Import overwrites current settings.</small>
+    <small>导出所有配置为 JSON。导入会覆盖当前设置。</small>
 </div>
 
 <!-- ===== PROMPT TAB ===== -->
 <div class="settings-tab-pane" data-pane="prompt">
     <div class="form-group">
-        <label for="systemPrompt">System Prompt</label>
-        <textarea id="systemPrompt" rows="5" class="system-prompt-textarea" placeholder="Leave empty for default..."></textarea>
-        <small>Override the default system prompt</small>
+        <label for="systemPrompt">系统提示词</label>
+        <textarea id="systemPrompt" rows="5" class="system-prompt-textarea" placeholder="留空使用默认..."></textarea>
+        <small>覆盖默认系统提示词</small>
     </div>
     <div id="orchestratorPromptSection" class="form-group hidden">
         <div class="settings-divider"></div>
-        <label for="orchestratorPromptTextarea">Orchestrator Prompt</label>
-        <textarea id="orchestratorPromptTextarea" rows="5" class="system-prompt-textarea" placeholder="Leave empty to use orchestrator profile's prompt..."></textarea>
-        <small>System prompt for the orchestrator profile. Edit here or in the profile editor.</small>
+        <label for="orchestratorPromptTextarea">编排器提示词</label>
+        <textarea id="orchestratorPromptTextarea" rows="5" class="system-prompt-textarea" placeholder="留空使用编排器配置的提示词..."></textarea>
+        <small>编排器配置的系统提示词。在此或配置编辑器中编辑。</small>
     </div>
     <div id="visionPromptSection" class="form-group hidden">
         <div class="settings-divider"></div>
-        <label for="visionPromptTextarea">Vision Prompt</label>
-        <textarea id="visionPromptTextarea" rows="5" class="system-prompt-textarea" placeholder="Leave empty to use vision profile's prompt..."></textarea>
-        <small>System prompt for the vision profile. Edit here or in the profile editor.</small>
+        <label for="visionPromptTextarea">视觉提示词</label>
+        <textarea id="visionPromptTextarea" rows="5" class="system-prompt-textarea" placeholder="留空使用视觉配置的提示词..."></textarea>
+        <small>视觉配置的系统提示词。在此或配置编辑器中编辑。</small>
     </div>
 </div>

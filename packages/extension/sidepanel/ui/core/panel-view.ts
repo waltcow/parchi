@@ -101,7 +101,7 @@ import { SidePanelUI } from './panel-ui.js';
     interactingTabId: null,
   };
   this.renderSessionTabsHud?.();
-  this.updateStatus('Ready for a new session', 'success');
+  this.updateStatus('准备开始新会话', 'success');
   this.switchView('chat');
   this.updateContextUsage();
   this.scrollToBottom({ force: true });

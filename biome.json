@@ -49,7 +49,6 @@
   "files": {
     "ignore": [
       "dist/**",
-      "dist-relay/**",
       "dist-firefox/**",
       "node_modules/**",
       "server/node_modules/**",

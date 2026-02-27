@@ -1,148 +1,147 @@
 <div class="profile-actions-row">
-    <input id="newProfileNameInput" type="text" placeholder="Profile name" />
-    <button id="createProfileBtn" class="btn btn-primary">Create</button>
-    <button id="refreshProfilesBtn" class="btn btn-secondary">Refresh</button>
+    <input id="newProfileNameInput" type="text" placeholder="配置名称" />
+    <button id="createProfileBtn" class="btn btn-primary">创建</button>
+    <button id="refreshProfilesBtn" class="btn btn-secondary">刷新</button>
 </div>
 <div id="agentGrid" class="agent-grid"></div>
 <div id="profileEditor" class="profile-editor">
     <div class="panel-header">
-        <span id="profileEditorTitle">Editing: default</span>
+        <span id="profileEditorTitle">正在编辑: 默认</span>
     </div>
     <div class="profile-editor-grid">
         <div class="form-group">
-            <label for="profileEditorName">Name</label>
-            <input type="text" id="profileEditorName" placeholder="Profile name" />
+            <label for="profileEditorName">名称</label>
+            <input type="text" id="profileEditorName" placeholder="配置名称" />
         </div>
         <div class="form-group">
-            <label for="profileEditorProvider">Provider</label>
+            <label for="profileEditorProvider">供应商</label>
             <select id="profileEditorProvider">
-                <option value="">Add provider...</option>
-                <option value="parchi">Parchi (Managed)</option>
+                <option value="">添加供应商...</option>
                 <option value="openai">OpenAI</option>
                 <option value="anthropic">Anthropic</option>
-                <option value="kimi">Kimi (Coding)</option>
+                <option value="kimi">Kimi (编程)</option>
                 <option value="openrouter">OpenRouter</option>
-                <option value="custom">Custom</option>
+                <option value="custom">自定义</option>
             </select>
         </div>
         <div class="form-group">
-            <label for="profileEditorApiKey">API Key</label>
+            <label for="profileEditorApiKey">API 密钥</label>
             <input type="password" id="profileEditorApiKey" placeholder="sk-..." />
         </div>
         <div class="form-group model-picker-group">
-            <label for="profileEditorModel">Model</label>
-            <input type="text" id="profileEditorModel" placeholder="Enter or search model ID" autocomplete="off" />
+            <label for="profileEditorModel">模型</label>
+            <input type="text" id="profileEditorModel" placeholder="输入或搜索模型 ID" autocomplete="off" />
             <div id="modelPickerDropdown" class="model-picker-dropdown hidden">
-                <input type="text" id="modelPickerFilter" class="model-picker-filter" placeholder="Filter models..." autocomplete="off" />
+                <input type="text" id="modelPickerFilter" class="model-picker-filter" placeholder="筛选模型..." autocomplete="off" />
                 <div id="modelPickerList" class="model-picker-list">
-                    <div class="model-picker-empty">Change provider or enter endpoint to load models</div>
+                    <div class="model-picker-empty">更换供应商或输入地址以加载模型</div>
                 </div>
             </div>
         </div>
         <div class="form-group" id="profileEditorEndpointGroup" style="display: none">
-            <label for="profileEditorEndpoint">Endpoint</label>
+            <label for="profileEditorEndpoint">地址</label>
             <input type="text" id="profileEditorEndpoint" placeholder="https://..." />
         </div>
         <div class="form-group full-width">
-            <label for="profileEditorHeaders">Extra Headers (JSON)</label>
+            <label for="profileEditorHeaders">额外请求头 (JSON)</label>
             <textarea id="profileEditorHeaders" rows="2" placeholder='{"HTTP-Referer":"https://your.app"}'></textarea>
         </div>
         <div class="form-group">
-            <label for="profileEditorTemperature">Temp <span id="profileEditorTemperatureValue">0.7</span></label>
+            <label for="profileEditorTemperature">温度 <span id="profileEditorTemperatureValue">0.7</span></label>
             <input type="range" id="profileEditorTemperature" min="0" max="2" step="0.1" value="0.7" />
         </div>
         <div class="form-group">
-            <label for="profileEditorMaxTokens">Max tokens</label>
+            <label for="profileEditorMaxTokens">最大 tokens</label>
             <input type="number" id="profileEditorMaxTokens" min="1" max="4096" value="2048" />
         </div>
         <div class="form-group">
-            <label for="profileEditorContextLimit">Context limit</label>
+            <label for="profileEditorContextLimit">上下文限制</label>
             <input type="number" id="profileEditorContextLimit" min="4000" value="200000" />
         </div>
         <div class="form-group">
-            <label for="profileEditorTimeout">Timeout</label>
+            <label for="profileEditorTimeout">超时</label>
             <input type="number" id="profileEditorTimeout" min="5000" step="1000" value="30000" />
         </div>
         <div class="form-group">
-            <label for="profileEditorEnableScreenshots">Screenshots</label>
+            <label for="profileEditorEnableScreenshots">截图</label>
             <select id="profileEditorEnableScreenshots">
-                <option value="false">Disabled</option>
-                <option value="true">Enabled</option>
+                <option value="false">禁用</option>
+                <option value="true">启用</option>
             </select>
         </div>
         <div class="form-group">
-            <label for="profileEditorSendScreenshots">Send as</label>
+            <label for="profileEditorSendScreenshots">发送方式</label>
             <select id="profileEditorSendScreenshots">
-                <option value="true">Images</option>
-                <option value="false">Text</option>
+                <option value="true">图片</option>
+                <option value="false">文本</option>
             </select>
         </div>
         <div class="form-group">
-            <label for="profileEditorScreenshotQuality">Quality</label>
+            <label for="profileEditorScreenshotQuality">质量</label>
             <select id="profileEditorScreenshotQuality">
-                <option value="high">High</option>
-                <option value="low">Low</option>
+                <option value="high">高</option>
+                <option value="low">低</option>
             </select>
         </div>
         <div class="form-group">
-            <label for="profileEditorShowThinking">Reasoning</label>
+            <label for="profileEditorShowThinking">推理</label>
             <select id="profileEditorShowThinking">
-                <option value="true">Show</option>
-                <option value="false">Hide</option>
+                <option value="true">显示</option>
+                <option value="false">隐藏</option>
             </select>
         </div>
         <div class="form-group">
-            <label for="profileEditorStreamResponses">Streaming</label>
+            <label for="profileEditorStreamResponses">流式</label>
             <select id="profileEditorStreamResponses">
-                <option value="true">Enabled</option>
-                <option value="false">Disabled</option>
+                <option value="true">启用</option>
+                <option value="false">禁用</option>
             </select>
         </div>
         <div class="form-group">
-            <label for="profileEditorAutoScroll">Auto-scroll</label>
+            <label for="profileEditorAutoScroll">自动滚动</label>
             <select id="profileEditorAutoScroll">
-                <option value="true">Enabled</option>
-                <option value="false">Disabled</option>
+                <option value="true">启用</option>
+                <option value="false">禁用</option>
             </select>
         </div>
         <div class="form-group">
-            <label for="profileEditorConfirmActions">Confirm actions</label>
+            <label for="profileEditorConfirmActions">确认操作</label>
             <select id="profileEditorConfirmActions">
-                <option value="true">Enabled</option>
-                <option value="false">Disabled</option>
+                <option value="true">启用</option>
+                <option value="false">禁用</option>
             </select>
         </div>
         <div class="form-group">
-            <label for="profileEditorSaveHistory">Save history</label>
+            <label for="profileEditorSaveHistory">保存历史</label>
             <select id="profileEditorSaveHistory">
-                <option value="true">Enabled</option>
-                <option value="false">Disabled</option>
+                <option value="true">启用</option>
+                <option value="false">禁用</option>
             </select>
         </div>
     </div>
     <details class="settings-section profile-system-prompt">
-        <summary>System prompt</summary>
+        <summary>系统提示词</summary>
         <div class="settings-body">
             <div class="form-group">
                 <textarea id="profileEditorPrompt" rows="3" class="system-prompt-textarea"></textarea>
             </div>
-            <small>Profile-level system prompt override. Leave empty to inherit default prompt.</small>
+            <small>配置级系统提示词覆盖。留空以继承默认提示词。</small>
         </div>
     </details>
-    <button id="saveProfileBtn" class="btn btn-primary">Save Profile</button>
+    <button id="saveProfileBtn" class="btn btn-primary">保存配置</button>
 </div>
 
 <details class="settings-section">
-    <summary>Profile JSON</summary>
+    <summary>配置 JSON</summary>
     <div class="settings-body">
         <div class="form-group">
-            <label for="profileJsonEditor">Active Profile JSON</label>
+            <label for="profileJsonEditor">当前配置 JSON</label>
             <textarea id="profileJsonEditor" rows="6" spellcheck="false"></textarea>
         </div>
         <div class="config-row">
-            <button id="refreshProfileJsonBtn" class="btn btn-secondary">Refresh</button>
-            <button id="copyProfileJsonBtn" class="btn btn-secondary">Copy</button>
-            <button id="applyProfileJsonBtn" class="btn btn-primary">Apply</button>
+            <button id="refreshProfileJsonBtn" class="btn btn-secondary">刷新</button>
+            <button id="copyProfileJsonBtn" class="btn btn-secondary">复制</button>
+            <button id="applyProfileJsonBtn" class="btn btn-primary">应用</button>
         </div>
     </div>
 </details>

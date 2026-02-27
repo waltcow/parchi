@@ -9,16 +9,16 @@
                             data-agent="main"
                         >
                             <span class="agent-status"></span>
-                            <span>Main</span>
+                            <span>主会话</span>
                         </div>
                     </div>
 
                     <!-- Empty state -->
                     <div id="chatEmptyState" class="chat-empty-state">
                         <div class="chat-empty-orb"></div>
-                        <div class="chat-empty-title">Ready when you are</div>
+                        <div class="chat-empty-title">随时待命</div>
                         <div class="chat-empty-subtitle">
-                            Ask anything or add tabs/files for richer context.
+                            随意提问或添加标签页/文件以获取更丰富的上下文。
                         </div>
                     </div>
 
@@ -32,11 +32,11 @@
                                 <svg class="plan-drawer-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="6 9 12 15 18 9"></polyline>
                                 </svg>
-                                <span>Plan</span>
-                                <span class="plan-drawer-count" id="planStepCount">0 steps</span>
+                                <span>计划</span>
+                                <span class="plan-drawer-count" id="planStepCount">0 个步骤</span>
                             </div>
                             <div class="plan-drawer-actions">
-                                <button class="plan-drawer-btn" id="planClearBtn" title="Clear plan">
+                                <button class="plan-drawer-btn" id="planClearBtn" title="清除计划">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <line x1="18" y1="6" x2="6" y2="18"></line>
                                         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -51,7 +51,7 @@
 
                     <!-- Jump to latest button -->
                     <button id="scrollToLatestBtn" class="jump-to-latest hidden">
-                        Jump to latest
+                        跳至最新
                     </button>
 
                     <!-- Composer -->
@@ -63,39 +63,20 @@
                         </div>
                         <div id="recordedContextBadge" class="recorded-context-badge hidden">
                             <span class="recording-dot"></span>
-                            <span class="recorded-context-label">Recording attached</span>
+                            <span class="recorded-context-label">已附加录制</span>
                             <button id="recordedContextRemove" class="recorded-context-remove">&times;</button>
                         </div>
                         <div id="composer" class="composer content-column">
                             <textarea
                                 id="userInput"
-                                placeholder="Message..."
+                                placeholder="发送消息..."
                                 rows="1"
                             ></textarea>
                             <div class="composer-toolbar">
                                 <div class="composer-toolbar-left">
-                                    <div class="mascot-wrapper">
-                                        <div id="mascotBubble" class="mascot-bubble hidden">
-                                            <div class="mascot-bubble-content">
-                                                <span id="bubbleVerb" class="bubble-verb"></span>
-                                                <span id="bubbleMeta" class="bubble-meta"></span>
-                                            </div>
-                                            <div class="mascot-bubble-tail"></div>
-                                        </div>
-                                        <div id="mascotCorner" class="mascot-corner sleeping" title="Your AI companion">
-                                            <div class="mascot-blob">
-                                                <div class="mascot-blob-body"></div>
-                                                <div class="mascot-eyes">
-                                                    <div class="mascot-eye"></div>
-                                                    <div class="mascot-eye"></div>
-                                                </div>
-                                                <div class="mascot-smile"></div>
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div id="statusBar" class="composer-status">
                                         <span id="statusDot" class="status-dot"></span>
-                                        <span id="statusText">Ready</span>
+                                        <span id="statusText">就绪</span>
                                         <span id="statusMeta" class="status-meta"></span>
                                     </div>
                                 </div>
@@ -103,8 +84,8 @@
                                     <button
                                         id="fileBtn"
                                         class="icon-btn"
-                                        title="Attach file"
-                                        data-tooltip="Attach file"
+                                        title="附加文件"
+                                        data-tooltip="附加文件"
                                     >
                                         <svg
                                             width="15"
@@ -126,7 +107,7 @@
                                         accept=".md,.txt,.csv,.json,.log"
                                         class="hidden"
                                     />
-                                    <button id="recordBtn" class="icon-btn record-btn" title="Record context" data-tooltip="Record context">
+                                    <button id="recordBtn" class="icon-btn record-btn" title="录制上下文" data-tooltip="录制上下文">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                             <circle cx="12" cy="12" r="7"/>
                                         </svg>
@@ -134,8 +115,8 @@
                                     <button
                                         id="tabSelectorBtn"
                                         class="icon-btn tab-selector-btn"
-                                        title="Select tabs"
-                                        data-tooltip="Select tabs for context"
+                                        title="选择标签页"
+                                        data-tooltip="选择标签页作为上下文"
                                     >
                                         <svg
                                             width="15"
@@ -169,8 +150,8 @@
                                     <button
                                         id="exportBtn"
                                         class="icon-btn export-btn"
-                                        title="Export conversation"
-                                        data-tooltip="Export conversation"
+                                        title="导出对话"
+                                        data-tooltip="导出对话"
                                     >
                                         <svg
                                             width="16"
@@ -194,7 +175,7 @@
                                             />
                                         </svg>
                                     </button>
-                                    <div class="zoom-controls" title="Adjust text size">
+                                    <div class="zoom-controls" title="调整字体大小">
                                         <button id="zoomOutBtn" class="zoom-btn" type="button" aria-label="Zoom out">
                                             A-
                                         </button>
@@ -208,19 +189,19 @@
                                     <button
                                         id="setupAccessBtn"
                                         class="setup-access-btn hidden"
-                                        title="Set up access"
+                                        title="设置访问"
                                         type="button"
                                     >
-                                        Pay or add your own key
+                                        付费或添加您自己的密钥
                                     </button>
                                     <div
                                         id="modelSelectorWrap"
                                         class="model-selector"
-                                        title="Switch profile"
+                                        title="切换配置"
                                     >
                                         <select id="modelSelect">
                                             <option value="">
-                                                Profile
+                                                配置
                                             </option>
                                         </select>
                                         <svg
@@ -238,7 +219,7 @@
                                     <button
                                         id="sendBtn"
                                         class="send-btn"
-                                        title="Send"
+                                        title="发送"
                                     >
                                         <svg class="send-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                             <line x1="12" y1="19" x2="12" y2="5"/>
@@ -259,7 +240,7 @@
                     <!-- Session Tabs Orb -->
                     <div id="sessionTabsHud" class="session-tabs-orb hidden">
                         <div id="sessionTabsList" class="session-tabs-list"></div>
-                        <button class="session-tabs-orb-btn" id="sessionTabsToggle" title="Browser tabs" type="button">
+                        <button class="session-tabs-orb-btn" id="sessionTabsToggle" title="浏览器标签页" type="button">
                             <img id="sessionTabsFavicon" class="session-tabs-orb-favicon" alt="" />
                             <svg class="session-tabs-orb-fallback" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="3" y="3" width="18" height="18" rx="3"/>
@@ -269,19 +250,19 @@
                         </button>
                     </div>
 
-                    <button id="openSidebarBtn" class="settings-fab" title="Settings" type="button" data-tooltip="Settings" data-tooltip-pos="below">
+                    <button id="openSidebarBtn" class="settings-fab" title="设置" type="button" data-tooltip="设置" data-tooltip-pos="below">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
                             <circle cx="12" cy="12" r="3" />
                             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
                         </svg>
                     </button>
-                    <button id="historyFab" class="history-fab" title="History" type="button" data-tooltip="History" data-tooltip-pos="below">
+                    <button id="historyFab" class="history-fab" title="历史记录" type="button" data-tooltip="历史记录" data-tooltip-pos="below">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10" />
                             <polyline points="12 6 12 12 16 14" />
                         </svg>
                     </button>
-                    <button id="newSessionFab" class="new-session-fab" title="New session" type="button" data-tooltip="New session" data-tooltip-pos="below">
+                    <button id="newSessionFab" class="new-session-fab" title="新建会话" type="button" data-tooltip="新建会话" data-tooltip-pos="below">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 5v14" />
                             <path d="M5 12h14" />
@@ -292,11 +273,11 @@
                 <!-- History Drawer Overlay -->
                 <div id="historyDrawer" class="history-drawer hidden">
                     <div class="history-drawer-header">
-                        <span class="history-drawer-title">History</span>
+                        <span class="history-drawer-title">历史记录</span>
                         <div class="history-drawer-actions">
-                            <button id="drawerClearHistoryBtn" class="btn btn-secondary">Clear</button>
-                            <button id="drawerNewSessionBtn" class="btn btn-primary">+ New</button>
-                            <button id="closeHistoryDrawerBtn" class="icon-btn" title="Close">
+                            <button id="drawerClearHistoryBtn" class="btn btn-secondary">清除</button>
+                            <button id="drawerNewSessionBtn" class="btn btn-primary">+ 新建</button>
+                            <button id="closeHistoryDrawerBtn" class="icon-btn" title="关闭">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <line x1="18" y1="6" x2="6" y2="18" />
                                     <line x1="6" y1="6" x2="18" y2="18" />
@@ -309,7 +290,7 @@
                             <circle cx="11" cy="11" r="8" />
                             <line x1="21" y1="21" x2="16.65" y2="16.65" />
                         </svg>
-                        <input id="historySearchInput" type="text" placeholder="Search conversations..." />
+                        <input id="historySearchInput" type="text" placeholder="搜索对话..." />
                     </div>
                     <div id="historyDrawerItems" class="history-drawer-list"></div>
                 </div>
@@ -319,12 +300,12 @@
                     <div class="image-picker-backdrop"></div>
                     <div class="image-picker-content">
                         <div class="image-picker-header">
-                            <span>Review Recording</span>
+                            <span>预览录制</span>
                             <span id="imagePickerCount" class="review-action-count"></span>
                         </div>
                         <div class="review-tabs">
-                            <button id="reviewTabActions" class="review-tab active">Actions</button>
-                            <button id="reviewTabScreenshots" class="review-tab">Screenshots</button>
+                            <button id="reviewTabActions" class="review-tab active">操作</button>
+                            <button id="reviewTabScreenshots" class="review-tab">截图</button>
                         </div>
                         <div id="reviewActionsPanel" class="review-panel">
                             <div id="actionTimelineContainer" class="action-timeline"></div>
@@ -333,10 +314,10 @@
                             <div id="imagePickerGrid" class="image-picker-grid"></div>
                         </div>
                         <div class="image-picker-footer">
-                            <button id="imagePickerCancel" class="btn btn-secondary">Cancel</button>
+                            <button id="imagePickerCancel" class="btn btn-secondary">取消</button>
                             <div class="review-footer-right">
-                                <button id="reviewAttachOnlyBtn" class="btn btn-secondary">Attach Only</button>
-                                <button id="reviewSaveSkillBtn" class="btn btn-primary">Save Skill</button>
+                                <button id="reviewAttachOnlyBtn" class="btn btn-secondary">仅附加</button>
+                                <button id="reviewSaveSkillBtn" class="btn btn-primary">保存技能</button>
                             </div>
                         </div>
                     </div>

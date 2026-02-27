@@ -58,3 +58,4 @@ tests/perf/perf-results-*.json
 
 .claude
 .osgrep
+.zcf/*

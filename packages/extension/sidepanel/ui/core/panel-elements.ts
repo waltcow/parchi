@@ -59,14 +59,12 @@ export const getSidePanelElements = (): SidePanelElements => ({
   settingsTabNetworkBtn: byId<HTMLButtonElement>('settingsTabNetworkBtn'),
   settingsTabPromptBtn: byId<HTMLButtonElement>('settingsTabPromptBtn'),
   settingsTabProfilesBtn: byId<HTMLButtonElement>('settingsTabProfilesBtn'),
-  settingsTabUsageBtn: byId<HTMLButtonElement>('settingsTabUsageBtn'),
   settingsTabSetup: byId<HTMLElement>('settingsTabSetup'),
   settingsTabModel: byId<HTMLElement>('settingsTabModel'),
   settingsTabBrowser: byId<HTMLElement>('settingsTabBrowser'),
   settingsTabNetwork: byId<HTMLElement>('settingsTabNetwork'),
   settingsTabPrompt: byId<HTMLElement>('settingsTabPrompt'),
   settingsTabProfiles: byId<HTMLElement>('settingsTabProfiles'),
-  settingsTabUsage: byId<HTMLElement>('settingsTabUsage'),
   newProfileNameInput: byId<HTMLInputElement>('newProfileNameInput'),
   createProfileBtn: byId<HTMLButtonElement>('createProfileBtn'),
   profileEditorTitle: byId<HTMLElement>('profileEditorTitle'),
@@ -105,15 +103,6 @@ export const getSidePanelElements = (): SidePanelElements => ({
   exportSettingsBtn: byId<HTMLButtonElement>('exportSettingsBtn'),
   importSettingsBtn: byId<HTMLButtonElement>('importSettingsBtn'),
   importSettingsInput: byId<HTMLInputElement>('importSettingsInput'),
-
-  // Relay
-  relayEnabled: byId<HTMLSelectElement>('relayEnabled'),
-  relayUrl: byId<HTMLInputElement>('relayUrl'),
-  relayToken: byId<HTMLInputElement>('relayToken'),
-  saveRelayBtn: byId<HTMLButtonElement>('saveRelayBtn'),
-  copyRelayEnvBtn: byId<HTMLButtonElement>('copyRelayEnvBtn'),
-  relayConnectedBadge: byId<HTMLElement>('relayConnectedBadge'),
-  relayLastErrorText: byId<HTMLElement>('relayLastErrorText'),
 
   // Form elements - Provider & model
   provider: byId<HTMLSelectElement>('provider'),
