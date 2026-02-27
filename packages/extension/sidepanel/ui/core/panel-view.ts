@@ -47,7 +47,6 @@ import { SidePanelUI } from './panel-ui.js';
   this.openSidebar();
   this.showRightPanel('settings');
   this.switchSettingsTab(this.currentSettingsTab || 'setup');
-  void this.refreshAccountPanel?.({ silent: true });
 };
 
 (SidePanelUI.prototype as any).startNewSession = function startNewSession() {

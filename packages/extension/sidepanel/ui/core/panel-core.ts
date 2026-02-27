@@ -116,26 +116,6 @@ const autoResizeTextArea = (textarea: HTMLTextAreaElement | null, maxHeight: num
     this.filterHistoryList(query);
   }, 150));
 
-  // Balance popover on status bar click
-  const statusBar = document.getElementById('statusBar');
-  const balancePopover = document.getElementById('balancePopover');
-  const balancePopoverClose = document.getElementById('balancePopoverClose');
-  if (statusBar && balancePopover) {
-    statusBar.addEventListener('click', () => this.toggleBalancePopover?.());
-    balancePopoverClose?.addEventListener('click', (e: Event) => {
-      e.stopPropagation();
-      balancePopover.classList.add('hidden');
-    });
-    // Close popover when clicking outside
-    document.addEventListener('click', (e: Event) => {
-      if (!balancePopover.classList.contains('hidden') &&
-          !balancePopover.contains(e.target as Node) &&
-          !statusBar.contains(e.target as Node)) {
-        balancePopover.classList.add('hidden');
-      }
-    });
-  }
-
   // Provider change
   this.elements.provider?.addEventListener('change', () => {
     this.toggleCustomEndpoint();

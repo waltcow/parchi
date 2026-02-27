@@ -545,11 +545,6 @@ const MAX_TOOL_CALL_VIEWS = 200;
     toolbarLabels.push(usageLabel);
   }
 
-  const paidStatusHoverLabel = String(this.paidStatusHoverLabel || '').trim();
-  if (paidStatusHoverLabel) {
-    toolbarLabels.push(paidStatusHoverLabel);
-  }
-
   if (this.elements.statusMeta) {
     this.elements.statusMeta.textContent = toolbarLabels.join(' · ');
   }

@@ -104,9 +104,6 @@ const FONT_STYLE_WEIGHTS: Record<string, string> = {
   const modelHint = document.getElementById('modelHint');
   if (modelHint) {
     switch (provider) {
-      case 'parchi':
-        modelHint.textContent = 'Managed routing via your credits. Default: moonshotai/kimi-k2.5.';
-        break;
       case 'anthropic':
         modelHint.textContent = 'Recommended: claude-sonnet-4-20250514';
         break;
@@ -184,7 +181,7 @@ const FONT_STYLE_WEIGHTS: Record<string, string> = {
 };
 
 (SidePanelUI.prototype as any).switchSettingsTab = function switchSettingsTab(
-  tabName: 'setup' | 'oauth' | 'model' | 'browser' | 'network' | 'prompt' | 'profiles' | 'usage' = 'setup',
+  tabName: 'setup' | 'model' | 'browser' | 'network' | 'prompt' | 'profiles' | 'usage' = 'setup',
 ) {
   // Persist current form state when leaving setup tab
   if (this.currentSettingsTab === 'setup' && tabName !== 'setup') {
@@ -193,10 +190,9 @@ const FONT_STYLE_WEIGHTS: Record<string, string> = {
   }
   this.currentSettingsTab = tabName;
 
-  const tabs = ['setup', 'oauth', 'model', 'browser', 'network', 'prompt', 'profiles', 'usage'] as const;
+  const tabs = ['setup', 'model', 'browser', 'network', 'prompt', 'profiles', 'usage'] as const;
   const tabElements: Record<string, HTMLElement | null> = {
     setup: this.elements.settingsTabSetup,
-    oauth: this.elements.settingsTabOauth,
     model: this.elements.settingsTabModel,
     browser: this.elements.settingsTabBrowser,
     network: this.elements.settingsTabNetwork,
@@ -206,7 +202,6 @@ const FONT_STYLE_WEIGHTS: Record<string, string> = {
   };
   const btnElements: Record<string, HTMLElement | null> = {
     setup: this.elements.settingsTabSetupBtn,
-    oauth: this.elements.settingsTabOauthBtn,
     model: this.elements.settingsTabModelBtn,
     browser: this.elements.settingsTabBrowserBtn,
     network: this.elements.settingsTabNetworkBtn,
@@ -341,7 +336,6 @@ const FONT_STYLE_WEIGHTS: Record<string, string> = {
   this.updateScreenshotToggleState();
   this.editProfile(this.currentConfig, true);
   this.updatePromptSections?.();
-  await this.refreshAccountPanel?.({ silent: true });
 };
 
 (SidePanelUI.prototype as any).updateRelayStatusFromSettings = function updateRelayStatusFromSettings(

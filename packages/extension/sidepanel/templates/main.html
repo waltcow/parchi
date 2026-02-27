@@ -93,34 +93,10 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="statusBar" class="composer-status" role="button" tabindex="0" data-tooltip="Click for balance" style="cursor: pointer;">
+                                    <div id="statusBar" class="composer-status">
                                         <span id="statusDot" class="status-dot"></span>
                                         <span id="statusText">Ready</span>
                                         <span id="statusMeta" class="status-meta"></span>
-                                    </div>
-                                    <div id="balancePopover" class="balance-popover hidden">
-                                        <div class="balance-popover-header">
-                                            <span>Account</span>
-                                            <button id="balancePopoverClose" class="balance-popover-close">&times;</button>
-                                        </div>
-                                        <div class="balance-popover-body">
-                                            <div class="balance-row">
-                                                <span class="balance-label">Credits</span>
-                                                <span id="balanceCreditsValue" class="balance-value">--</span>
-                                            </div>
-                                            <div class="balance-row">
-                                                <span class="balance-label">Plan</span>
-                                                <span id="balancePlanValue" class="balance-value">--</span>
-                                            </div>
-                                            <div class="balance-row">
-                                                <span class="balance-label">Spend (month)</span>
-                                                <span id="balanceSpendValue" class="balance-value">--</span>
-                                            </div>
-                                            <div class="balance-row">
-                                                <span class="balance-label">Session tokens</span>
-                                                <span id="balanceSessionTokens" class="balance-value">--</span>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                                 <div class="composer-toolbar-right">
@@ -259,10 +235,6 @@
                                             <polyline points="6 9 12 15 18 9" />
                                         </svg>
                                     </div>
-                                    <span id="paidStatusBadge" class="paid-status-badge hidden" title="Paid status">
-                                        <span class="paid-status-dot" aria-hidden="true"></span>
-                                        <span class="paid-status-text">Paid: unavailable</span>
-                                    </span>
                                     <button
                                         id="sendBtn"
                                         class="send-btn"
@@ -366,19 +338,6 @@
                                 <button id="reviewAttachOnlyBtn" class="btn btn-secondary">Attach Only</button>
                                 <button id="reviewSaveSkillBtn" class="btn btn-primary">Save Skill</button>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="accountOnboardingModal" class="account-onboarding-modal hidden">
-                    <div class="account-onboarding-card">
-                        <div class="account-onboarding-title">Choose your setup</div>
-                        <div class="account-onboarding-subtitle">
-                            To continue, choose one: pay for Parchi managed access with transparent per-request costs, or bring your own API keys.
-                        </div>
-                        <div class="account-onboarding-actions">
-                            <button id="accountChooseByokBtn" class="btn btn-secondary">Add provider</button>
-                            <button id="accountChoosePaidBtn" class="btn btn-primary">Use Parchi managed</button>
                         </div>
                     </div>
                 </div>
